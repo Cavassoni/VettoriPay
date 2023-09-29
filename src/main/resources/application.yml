@@ -1,0 +1,23 @@
+spring:
+  # Configuracao MongoDB
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/vettoriPay
+
+  # Configuracao MySQL
+  datasource:
+    url: jdbc:mysql://localhost:3306/vettoriPay
+    username: local_user
+    password: 1&8167LSb9MEX$k2kk
+
+  # hibernate
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+    hibernate:
+      ddl-auto: validate
+
+  profiles:
+    active: prod
