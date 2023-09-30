@@ -1,6 +1,7 @@
 package com.cavassoni.vettoripay.controller;
 
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.entity.User;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -24,4 +25,7 @@ public interface UserController {
 
     @PutMapping(value = "/{userId}")
     ResponseEntity<User> update(@NotNull @PathVariable UUID userId, @NotNull @RequestBody UserDto userDto);
+
+    @PutMapping(value = "/{userId}/password")
+    ResponseEntity<User> updatePassword(@NotNull @PathVariable UUID userId, @NotNull @RequestBody UserPasswordDto userPasswordDto);
 }

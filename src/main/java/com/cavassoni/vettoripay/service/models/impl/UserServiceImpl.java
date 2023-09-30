@@ -1,8 +1,10 @@
 package com.cavassoni.vettoripay.service.models.impl;
 
 import com.cavassoni.vettoripay.config.exception.FindByIdNotFound;
+import com.cavassoni.vettoripay.config.exception.ValidationException;
 import com.cavassoni.vettoripay.config.mapper.UserStructMapper;
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.entity.User;
 import com.cavassoni.vettoripay.domain.mysql.entity.Wallet;
 import com.cavassoni.vettoripay.domain.mysql.repository.UserRepository;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserStructMapper userStructMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Optional<User> getUserById(UUID userId) {
@@ -41,17 +44,33 @@ public class UserServiceImpl implements UserService {
                 .build());
 
         if (StringUtils.isNotBlank(userDto.password()))
-            userConverted.setPassword(new BCryptPasswordEncoder().encode(userDto.password()));
+            userConverted.setPassword(passwordEncoder.encode(userDto.password()));
 
         return userRepository.save(userConverted);
     }
 
     @Override
     public User update(UUID userId, UserDto userDto) {
-        final var user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new FindByIdNotFound("Usuário não encontrado"));
+        final var user = getUser(userId);
 
         return userRepository.save(userStructMapper.update(userDto, user));
+    }
+
+    private User getUser(UUID userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new FindByIdNotFound("Usuário não encontrado"));
+    }
+
+    @Override
+    public void updatePassword(UUID userId, UserPasswordDto userPasswordDto) {
+        final var user = getUser(userId);
+
+        if (!passwordEncoder.matches(userPasswordDto.oldPassword(), user.getPassword()))
+            throw new ValidationException("Senha atual incorreta");
+
+        user.setPassword(passwordEncoder.encode(userPasswordDto.newPassword()));
+
+        userRepository.save(user);
     }
 }

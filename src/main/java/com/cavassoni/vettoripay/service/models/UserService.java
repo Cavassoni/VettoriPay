@@ -1,6 +1,7 @@
 package com.cavassoni.vettoripay.service.models;
 
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.entity.User;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,4 +14,6 @@ public interface UserService {
     User insert(UserDto userDto);
 
     User update(UUID userId, UserDto userDto);
+
+    void updatePassword(UUID userId, UserPasswordDto userPasswordDto);
 }

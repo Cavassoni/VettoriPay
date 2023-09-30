@@ -1,6 +1,7 @@
 package com.cavassoni.vettoripay.integration;
 
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.type.UserType;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -118,5 +119,46 @@ public class UserControllerIntegrationTest extends BaseIntegrationControllerTest
                         .content(requestBody(validUser)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Usuário não encontrado"));
+    }
+
+    @Test
+    @Sql(statements = """
+                INSERT INTO vettoriPay_test.user (id, cpf, email, name, password, phone, user_type)
+                VALUES (uuid_to_bin('b972d28c-b482-4b2b-9a65-18b192eb7bf4'), '12578323485', 'john@example.com', 'John Doe', '$2a$10$ZW53b5x9PFhBdKXINh2efOsj2Ti.t9lzRsrZGyQK8np75zfFNARD2', '27998874512', 'USER');
+            """)
+    public void updatePassword() throws Exception {
+        final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
+
+        final var passwordDto = UserPasswordDto.builder()
+                .oldPassword("123456")
+                .newPassword("654321")
+                .build();
+
+        mockMvc
+                .perform(put(BASE_URL + String.format("/%s/password", userId))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .content(requestBody(passwordDto)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Sql(statements = """
+                INSERT INTO vettoriPay_test.user (id, cpf, email, name, password, phone, user_type)
+                VALUES (uuid_to_bin('b972d28c-b482-4b2b-9a65-18b192eb7bf4'), '12578323485', 'john@example.com', 'John Doe', '$2a$10$ZW53b5x9PFhBdKXINh2efOsj2Ti.t9lzRsrZGyQK8np75zfFNARD2', '27998874512', 'USER');
+            """)
+    public void updatePasswordNotMatch() throws Exception {
+        final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
+
+        final var passwordDto = UserPasswordDto.builder()
+                .oldPassword("123")
+                .newPassword("654321")
+                .build();
+
+        mockMvc
+                .perform(put(BASE_URL + String.format("/%s/password", userId))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .content(requestBody(passwordDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Senha atual incorreta"));
     }
 }

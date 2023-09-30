@@ -2,6 +2,7 @@ package com.cavassoni.vettoripay.controller.impl;
 
 import com.cavassoni.vettoripay.controller.UserController;
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.entity.User;
 import com.cavassoni.vettoripay.service.models.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,16 +47,39 @@ public class UserControllerImpl implements UserController {
     )
     public ResponseEntity<User> insert(UserDto userDto) {
         var newUser = userService.insert(userDto);
-        return ResponseEntity //
-                .status(HttpStatus.CREATED) //
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(newUser);
     }
 
+    @Operation(
+            summary = "Atualiza usuário existente",
+            tags = "User",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Usuário cadastrado com sucesso"),
+            }
+    )
     @Override
     public ResponseEntity<User> update(UUID userId, UserDto userDto) {
         var updatedUser = userService.update(userId, userDto);
-        return ResponseEntity //
-                .status(HttpStatus.OK) //
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(updatedUser);
+    }
+
+    @Operation(
+            summary = "Atualiza senha do usuário",
+            tags = "User",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Usuário cadastrado com sucesso"),
+                    @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            }
+    )
+    @Override
+    public ResponseEntity<User> updatePassword(UUID userId, UserPasswordDto userPasswordDto) {
+        userService.updatePassword(userId, userPasswordDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 }

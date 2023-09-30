@@ -1,6 +1,7 @@
 package com.cavassoni.vettoripay.controller.impl;
 
 import com.cavassoni.vettoripay.domain.mysql.dto.UserDto;
+import com.cavassoni.vettoripay.domain.mysql.dto.UserPasswordDto;
 import com.cavassoni.vettoripay.domain.mysql.entity.User;
 import com.cavassoni.vettoripay.domain.mysql.type.UserType;
 import com.cavassoni.vettoripay.service.models.UserService;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +23,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = {UserControllerImpl.class})
@@ -77,6 +82,46 @@ public class UserControllerImplTest extends BaseControllerImplTest {
         Mockito.verify(userService).insert(argumentCaptor.capture());
 
         Assertions.assertEquals(validUser, argumentCaptor.getValue());
+    }
+
+
+    @Test
+    public void updateUser() throws Exception {
+        final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
+
+        UserDto validUser = new UserDto("John", "12312312345", "e@e.com", null, UserType.LOGIST, "111111");
+
+        mockMvc
+                .perform(put(BASE_URL + String.format("/%s", userId))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .content(requestBody(validUser)))
+                .andExpect(status().isOk());
+
+        var argumentCaptor = ArgumentCaptor.forClass(UserDto.class);
+        Mockito.verify(userService).update(Mockito.eq(userId), argumentCaptor.capture());
+
+        Assertions.assertEquals(validUser, argumentCaptor.getValue());
+    }
+
+    @Test
+    public void updatePassword() throws Exception {
+        final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
+
+        final var passwordDto = UserPasswordDto.builder()
+                .oldPassword("123456")
+                .newPassword("654321")
+                .build();
+
+        mockMvc
+                .perform(put(BASE_URL + String.format("/%s/password", userId))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .content(requestBody(passwordDto)))
+                .andExpect(status().isOk());
+
+        var argumentCaptor = ArgumentCaptor.forClass(UserPasswordDto.class);
+        Mockito.verify(userService).updatePassword(Mockito.eq(userId), argumentCaptor.capture());
+
+        Assertions.assertEquals(passwordDto, argumentCaptor.getValue());
     }
 
 }
