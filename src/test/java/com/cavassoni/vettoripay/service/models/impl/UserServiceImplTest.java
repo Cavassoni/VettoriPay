@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,20 +54,32 @@ class UserServiceImplTest {
 
     @Test
     void insert() {
-        UserDto userDto = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456");
-
-        when(userRepository.save(Mockito.any(User.class)))
-                .thenReturn(mockedUser);
+        UserDto userDto = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456", BigDecimal.TEN);
 
         userService.insert(userDto);
 
-        verify(userRepository).save(Mockito.any(User.class));
+        final var argumentCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(argumentCaptor.capture());
+
+        Assertions.assertEquals(userDto.initialBalance(), argumentCaptor.getValue().getWallet().getBalance());
+    }
+
+    @Test
+    void insertWithoutInitialBalance() {
+        UserDto userDto = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456", null);
+
+        userService.insert(userDto);
+
+        final var argumentCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(argumentCaptor.capture());
+
+        Assertions.assertEquals(BigDecimal.ZERO, argumentCaptor.getValue().getWallet().getBalance());
     }
 
     @Test
     void update() {
         final var userId = UUID.randomUUID();
-        UserDto userDto = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456");
+        UserDto userDto = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456", BigDecimal.ZERO);
 
         when(userRepository.findById(userId))
                 .thenReturn(Optional.of(mockedUser));

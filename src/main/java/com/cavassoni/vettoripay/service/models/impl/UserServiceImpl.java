@@ -12,6 +12,7 @@ import com.cavassoni.vettoripay.domain.validation.config.CustomDtoValidator;
 import com.cavassoni.vettoripay.domain.validation.dto.UserDtoValidator;
 import com.cavassoni.vettoripay.service.models.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public User insert(UserDto userDto) {
         User userConverted = userStructMapper.convert(userDto);
         userConverted.setWallet(Wallet.builder() //
-                .balance(BigDecimal.ZERO) //
+                .balance(ObjectUtils.defaultIfNull(userDto.initialBalance(), BigDecimal.ZERO)) //
                 .user(userConverted) //
                 .build());
 

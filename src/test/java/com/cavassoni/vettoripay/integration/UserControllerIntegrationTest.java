@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,19 +57,20 @@ public class UserControllerIntegrationTest extends BaseIntegrationControllerTest
 
     @Test
     public void insertUser() throws Exception {
-        UserDto validUser = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456");
+        UserDto validUser = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456", BigDecimal.TEN);
 
         mockMvc
                 .perform(post(BASE_URL)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody(validUser)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNotEmpty());
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.wallet.balance").value(10));
     }
 
     @Test
     public void insertUserErrorValidator() throws Exception {
-        UserDto validUser = new UserDto("John Doe", "12578323485", null, null, UserType.USER, "123456");
+        UserDto validUser = new UserDto("John Doe", "12578323485", null, null, UserType.USER, "123456", BigDecimal.ZERO);
 
         mockMvc
                 .perform(post(BASE_URL)
@@ -88,7 +90,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationControllerTest
     public void updateUser() throws Exception {
         final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
 
-        UserDto validUser = new UserDto("John", "12312312345", "e@e.com", null, UserType.LOGIST, "111111");
+        UserDto validUser = new UserDto("John", "12312312345", "e@e.com", null, UserType.LOGIST, "111111", null);
 
         mockMvc
                 .perform(put(BASE_URL + String.format("/%s", userId))
@@ -111,7 +113,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationControllerTest
 
     @Test
     public void updateUserErrorNotFound() throws Exception {
-        UserDto validUser = new UserDto("John Doe", "12578323485", null, null, UserType.USER, "123456");
+        UserDto validUser = new UserDto("John Doe", "12578323485", null, null, UserType.USER, "123456", null);
 
         mockMvc
                 .perform(put(BASE_URL + String.format("/%s", UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4")))

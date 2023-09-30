@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,7 +71,7 @@ public class UserControllerImplTest extends BaseControllerImplTest {
 
     @Test
     public void insertUser() throws Exception {
-        UserDto validUser = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456");
+        UserDto validUser = new UserDto("John Doe", "12578323485", "john@example.com", "27998874512", UserType.USER, "123456", BigDecimal.TEN);
 
         mockMvc
                 .perform(post(BASE_URL)
@@ -89,7 +90,7 @@ public class UserControllerImplTest extends BaseControllerImplTest {
     public void updateUser() throws Exception {
         final UUID userId = UUID.fromString("b972d28c-b482-4b2b-9a65-18b192eb7bf4");
 
-        UserDto validUser = new UserDto("John", "12312312345", "e@e.com", null, UserType.LOGIST, "111111");
+        UserDto validUser = new UserDto("John", "12312312345", "e@e.com", null, UserType.LOGIST, "111111", BigDecimal.ZERO);
 
         mockMvc
                 .perform(put(BASE_URL + String.format("/%s", userId))

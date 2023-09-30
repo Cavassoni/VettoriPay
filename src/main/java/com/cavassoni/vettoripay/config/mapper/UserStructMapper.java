@@ -16,7 +16,7 @@ public interface UserStructMapper {
 
     @Mappings({
             @Mapping(target = "userType", ignore = true),
-            @Mapping(target = "password", ignore = true)
+            @Mapping(target = "password", ignore = true),
     })
     User update(UserDto dto, @MappingTarget User userTelephone);
 }
