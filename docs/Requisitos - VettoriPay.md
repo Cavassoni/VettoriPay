@@ -4,9 +4,10 @@
 
 ## Histórico de Alterações
 
-| Data       | Versão | Descrição                              | Autor            |
-|------------|--------|----------------------------------------|------------------|
-| 18/09/2023 | 1.0    | Definição dos requisitos a serem implementados | Lucas A. Cavassoni |
+| Data       | Versão | Descrição                                                     | Autor            |
+|------------|--------|---------------------------------------------------------------|------------------|
+| 18/09/2023 | 1.0    | Definição dos requisitos a serem implementados                | Lucas A. Cavassoni |
+| 01/10/2023 | 1.1    | Atualização nos requisitos 1 e 2 referente a senha do usuário | Lucas A. Cavassoni |
 
 ## Descrição Geral do Sistema
 
@@ -19,15 +20,18 @@ O projeto em questão visa desenvolver um sistema de pagamento denominado "Vetto
 - O sistema deve permitir o cadastro de usuário fornecendo Nome Completo, CPF, E-mail, Telefone, Tipo (Comum ou Lojista), Senha.
 - O CPF (usuário comum) ou CNPJ (lojistas) deve ser um campo obrigatório no cadastro.
 - CPF/CNPJ, E-mail e Telefone devem ser únicos por usuário.
+- Senha deve ser obrigatória
 
 ### [RF002] - Gestão de Carteira
 
 - Cada usuário, seja ele comum ou lojista, deve ter uma carteira virtual que irá armazenar seu saldo.
 - Usuários poderão visualizar o saldo de suas carteiras.
+- Usuários poderão visualizar o saldo de suas carteiras, mas para isso será necessário o envio da senha.
 
 ### [RF003] - Transferência Financeira
 
 - Usuários devem ser capazes de iniciar transferências de dinheiro.
+- Deverá ser validado a autenticidade do usuário através de senha.
 - Usuário comum pode enviar dinheiro para outros usuários ou lojistas.
 - Lojistas apenas receberão dinheiro.
 - Deve ser validado se o usuário tem saldo antes da transferência.

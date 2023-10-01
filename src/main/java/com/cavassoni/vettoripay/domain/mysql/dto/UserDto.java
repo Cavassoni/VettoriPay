@@ -14,6 +14,6 @@ public record UserDto(@NotNull String name,
                       @Email String email,
                       String phone,
                       @NotNull UserType userType,
-                      String password,
+                      @NotNull String password,
                       BigDecimal initialBalance) implements DtoValidator<UserDto> {
 }

@@ -60,6 +60,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(BadCredentials.class)
+    public ResponseEntity<Object> handleBadCredentials(BadCredentials exception, WebRequest request) {
+        logger.error("BadCredentials: {}", exception.getMessage());
+        return ResponseEntity //
+                .status(HttpStatus.UNAUTHORIZED) //
+                .body(ErrorResponse.builder() //
+                        .message(exception.getMessage()) //
+                        .build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception exception, WebRequest request) {
         logger.error("Exception: " + exception.getMessage(), exception);
